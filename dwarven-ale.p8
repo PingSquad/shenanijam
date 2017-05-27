@@ -159,7 +159,10 @@ function init_fungus()
  -- for each line
  for y=foot.y,128 do for x=foot.x,128 do
   if pget(x,y) != 0 then -- find the foot
-   add(fungus, {x=x-1,y=y,l=0}) -- record outline
+   add(fungus, {
+    x=x-1,y=y,l=0, -- record outline
+    maxl=fungus_max_length+rnd(6)-3
+   }) 
    break
   end
  end end
@@ -175,7 +178,7 @@ end
 function grow_a_fungus()
  if rnd(100)<fungus_grow_speed then
   f = choose(fungus)
-  if f.l<fungus_max_length then
+  if f.l<f.maxl then
    f.l += 1
   end
  end
