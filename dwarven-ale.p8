@@ -5,7 +5,7 @@ game_started_at = time()
 old_seed = 0
 
 lvl={
- {bottom=100},
+ {bottom=120},
  current=1
 }
 
