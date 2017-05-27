@@ -85,13 +85,13 @@ function update_foot()
    del(f.blood_spouts, bf)
   end
  end
- debug.f=function()
-  print(#foot.blood_spouts,0,0,7)
-  y=0
-  for bs in all(foot.blood_spouts) do 
-   print('hp:'..bs.hp..' #:'..#bs.drops,0,bs.y,7)
-  end
- end
+ -- debug.f=function()
+ --  print(#foot.blood_spouts,0,0,7)
+ --  y=0
+ --  for bs in all(foot.blood_spouts) do 
+ --   print('hp:'..bs.hp..' #:'..#bs.drops,0,bs.y,7)
+ --  end
+ -- end
 end
 
 -- spouts blood
@@ -362,12 +362,15 @@ function draw_knife1()
  -- metal
  circ(x,y-h, 2, 6)
  for lx=x-2,x+2 do
-  o = t+lx%60<1 and 1 or 0
+  o = (t+lx)%50x = flr(x-foot.offx)
+y = flr(y-foot.offy)<1 and 1 or 0
   line(x,y,lx,y-h,6+o)
  end
  --handle
  rectfill(x-1,y-h-1,
           x+1,y-h+1, 4)
+ c = 5+(t%8)/4
+ pset(x,y,c)
 
 end
 
