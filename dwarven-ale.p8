@@ -182,6 +182,8 @@ function cut_fungus(x,y)
  x = flr(x-foot.offx)
  y = flr(foot.y-y-foot.offy)
  f = fungus[y]
+ if (not f) return
+ y = f.y
  
 end
 
@@ -362,8 +364,7 @@ function draw_knife1()
  -- metal
  circ(x,y-h, 2, 6)
  for lx=x-2,x+2 do
-  o = (t+lx)%50x = flr(x-foot.offx)
-y = flr(y-foot.offy)<1 and 1 or 0
+  o = (t+lx)%50<1 and 1 or 0
   line(x,y,lx,y-h,6+o)
  end
  --handle
