@@ -221,7 +221,7 @@ end
 
 -- helpers
 function srnd(v)
- old_seed = rnd(128)
+ old_seed = rnd(128) + game_started_at + t
  srand(v)
 end
 
