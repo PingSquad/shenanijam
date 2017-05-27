@@ -4,10 +4,17 @@ __lua__
 game_started_at = time()
 old_seed = 0
 
+lvl={
+ {bottom=100}
+}
+
 t=0
+
+debug = {f=function()end}
 
 function _init()
  init_foot()
+ init_knife1()
 end
 
 function _update()
@@ -16,6 +23,8 @@ function _update()
  foot.offx = sin(t/s)*1.3
  foot.offy = sin(t/s/2-s/21)*5
  update_fungus()
+ 
+ update_knife1()
 end
 
 function _draw()
@@ -35,6 +44,8 @@ function _draw()
  all_to_color()
  draw_foot()
  draw_fungus()
+ draw_knife1()
+ debug.f()
 end
 
 -- objects
@@ -123,6 +134,91 @@ function draw_a_fungus(f)
  unsrnd()
 end
 
+-- foot knife
+function init_knife1()
+ knife1={
+ x=64,
+ dx=0,
+ max_dx=3,
+ y=10,
+ dy=0,
+ max_dy=.1,  --.7
+ h=10,
+ speedy=.02,
+ speedx=.4,
+ falling=false,
+ left=false} 
+end
+
+function update_knife1()
+ bl=btn(0)
+ br=btn(1)
+ k=knife1
+ 
+ -- move left/right
+ if bl then
+  if (not k.left) k.dx=0
+  k.left = true
+  k.dx -= k.speedx
+ elseif br then
+  if (k.left) k.dx=0
+  k.left = false
+  k.dx += k.speedx
+ else  -- no btn pressed 
+  k.dx = 0
+ end
+
+ k.dx = mid(-k.max_dx, k.dx, k.max_dx)
+ k.x = k.x+k.dx
+ k.x = mid(8,120,k.x)
+
+
+ -- change this later
+ if btnp(4) then
+  k.falling = true
+ end
+
+ -- move down
+ if k.falling then
+  k.dy = min(k.dy+k.speedy, 
+                 k.max_dy)
+  k.y += k.dy
+ end
+
+
+ -- collision
+
+ -- fungus strip
+ -- fs = get_fungus(k.y)
+ -- if (not fs) return
+ -- lp = flr(fs.x-fs.l+foot.offx)
+ -- rp = flr(fs.x+foot.offx)
+ -- debug = {f=function()line(lp,k.y,rp,k.y,8)end}
+
+-- get fungus string at y coord lvl
+-- or nil
+function get_fungus(y)
+ y = y-foot.y-foot.offy
+ if(y < 1 or y > #fungus) return nil
+ return fungus[y]
+end
+
+function draw_knife1()
+ x=knife1.x
+ y=knife1.y
+ h=knife1.h
+ -- metal
+ circ(x,y-h, 2, 6)
+ for lx=x-2,x+2 do
+  o = t+lx%60<1 and 1 or 0
+  line(x,y,lx,y-h,6+o)
+ end
+ --handle
+ rectfill(x-1,y-h-1,
+          x+1,y-h+1, 4)
+
+end
+
 -- helpers
 function srnd(v)
  old_seed = rnd(128)
@@ -145,6 +241,24 @@ function all_to_color(c)
    pal(i)
   end
  end
+end
+
+
+-- checks screen coord color
+-- return it's within the colors arr
+function phit_colors(x,y, colors)
+ c = pget(flr(x),flr(y))
+ for hc in all(colors) do
+  if c == hc then
+   return true
+  end
+ end
+ return false
+end
+
+function intersects_point_box(px,py,x,y,w,h)
+ return flr(px)>=flr(x) and flr(px)<flr(x+w) and
+        flr(py)>=flr(y) and flr(py)<flr(y+h)
 end
 __gfx__
 000000000004ffff0000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000000000
