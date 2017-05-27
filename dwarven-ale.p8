@@ -118,7 +118,7 @@ end
 
 -- fungus
 function init_fungus()
- fungus_grow_speed = 300
+ fungus_grow_speed = 10
  fungus_seed = rnd(128)
  fungus = {}
  fungus_max_length = 15
