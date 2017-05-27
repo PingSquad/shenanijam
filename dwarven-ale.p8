@@ -439,15 +439,22 @@ function draw_knife1()
  x=knife1.x
  y=knife1.y
  h=knife1.h
+ fulcrum = {x=64,y=-h*4}
+ ux,uy = unit(x-fulcrum.x, y-fulcrum.y)
+ ux*=h
+ uy*=h
+ hx=x-ux
+ hy=y-uy
+
  -- metal
- circ(x,y-h, 2, 6)
- for lx=x-2,x+2 do
+ circ(hx,hy, 2, 6)
+ for lx=hx-2,hx+2 do
   o = (t+lx)%50<1 and 1 or 0
-  line(x,y,lx,y-h,6+o)
+  line(x,y,lx,hy,6+o)
  end
  --handle
- rectfill(x-1,y-h-1,
-          x+1,y-h+1, 4)
+ rectfill(hx-1,hy-1,
+          hx+1,hy+1, 4)
  c = 5+(t%8)/4
  pset(x,y,c)
 
