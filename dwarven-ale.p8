@@ -336,6 +336,7 @@ function init_knife1()
  x=64,
  dx=0,
  max_dx=3,
+ start_y=10,
  y=10,
  dy=0,
  max_dy=.7,  --.7
@@ -343,6 +344,7 @@ function init_knife1()
  speedy=.02,
  speedx=.4,
  falling=false,
+ raising=true,
  left=false} 
 end
 
@@ -370,19 +372,35 @@ function update_knife1()
 
 
  -- change this later
- if btnp(4) then
+ if btnp(4) and not k.raising then
   k.falling = true
  end
 
  -- move down
  if k.falling then
   k.dy = min(k.dy+k.speedy, 
-                 k.max_dy)
+             k.max_dy)
+  k.y += k.dy
+ elseif k.raising then
+  k.dy = max(k.dy-k.speedy*4,
+             -k.max_dy*4)
   k.y += k.dy
  end
 
+ if k.y >= lvl[1].bottom then 
+  k.raising = true
+  k.falling = false
+ elseif k.y <= k.start_y then
+  k.raising = false
+  k.dy = 0.2
+ end
+
+ debug.f=function()print(k.dy,0,0)end
+
+
 
  -- collision
+ if(k.raising)return -- no collisions when raising
 
  -- fungus strip
  -- fs = get_fungus(k.y)
