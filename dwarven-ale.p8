@@ -19,29 +19,13 @@ end
 
 function _update()
  t+=1
- s=foot.speed
- foot.offx = sin(t/s)*1.3
- foot.offy = sin(t/s/2-s/21)*5
- update_fungus()
  
  update_knife1()
+ update_foot()
 end
 
 function _draw()
  cls()
- all_to_color(2)
- draw_foot(foot.x+17+foot.offx/3,
- 										foot.y+5+foot.offy/4,
- 										.94)
- all_to_color()
- all_to_color(1)
- draw_foot(foot.x+foot.offx+1,
- 										foot.y+foot.offy)
- all_to_color()
- all_to_color(1)
- draw_foot(foot.x+foot.offx,
- 										foot.y+foot.offy+1)
- all_to_color()
  draw_foot()
  draw_fungus()
  draw_knife1()
@@ -52,20 +36,60 @@ end
 
 -- foot
 function init_foot()
- foot = {}
- foot.x=101
- foot.y=20
- foot.bw=8*2+4
- foot.bh=8*7+3
- foot.w=8*3.7
- foot.h=8*11
- foot.offx=0
- foot.offy=0
- foot.speed=200
+ foot={
+  x=101,
+  rest_x=101,
+  y=20,
+  bw=8*2+4,
+  bh=8*7+3,
+  w=8*3.7,
+  h=8*11,
+  offx=0,
+  offy=0,
+  speed=200,
+  hit_off=0,
+  dx=0,
+  max_dx = 10,
+  grav=-1,
+  dec=.9,
+  blood_spouts={}
+ }
  init_fungus()
+ for i=0,8000 do
+  update_fungus()
+ end
 end
 
-function draw_foot(x,y,s)
+function update_foot()
+ f = foot
+ s=f.speed
+ f.offy = sin(t/s/2-s/21)*5
+ update_fungus()
+end
+function draw_foot()
+ all_to_color(2)
+ draw_foot_here(foot.x+17+foot.offx/3,
+                foot.y+5+foot.offy/4,
+                .94)
+ all_to_color()
+ all_to_color(1)
+ draw_foot_here(foot.x+foot.offx+1,
+                foot.y+foot.offy)
+ all_to_color()
+ all_to_color(1)
+ draw_foot_here(foot.x+foot.offx,
+                foot.y+foot.offy+1)
+ all_to_color()
+ if foot.dx > 0 then
+  all_to_color(7)
+  draw_foot_here()
+  all_to_color()
+ else
+  draw_foot_here()
+ end
+end
+
+function draw_foot_here(x,y,s)
  s = s or 1
  sspr(8,0,
  				 foot.bw,foot.bh,
@@ -83,7 +107,7 @@ function init_fungus()
  
  -- get foot outline
  cls()
- draw_foot()
+ draw_foot_here()
  -- for each line
  for y=foot.y,128 do for x=foot.x,128 do
   if pget(x,y) != 0 then -- find the foot
