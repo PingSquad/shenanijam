@@ -51,6 +51,9 @@ function _draw()
  draw_fungus()
 end
 
+-- objects
+
+-- foot
 function draw_foot(x,y,s)
  s = s or 1
  sspr(8,0,
@@ -60,9 +63,32 @@ function draw_foot(x,y,s)
  					foot.w*s,foot.h*s)
 end
 
+-- fungus
+function init_fungus()
+ cls()
+ draw_foot()
+ -- for each line
+ for y=foot.y,128 do for x=foot.x,128 do
+  if pget(x,y) != 0 then -- find the foot
+   add(fungus, {x=x-1,y=y,l=0}) -- record outline
+   break
+  end
+ end end
+ cls()
+end
+
 function update_fungus()
  for c=0,fungus_grow_speed,100 do
- grow_a_fungus()
+  grow_a_fungus()
+ end
+end
+
+function grow_a_fungus()
+ if rnd(100)<fungus_grow_speed then
+  f = choose(fungus)
+  if f.l<fungus_max_length then
+   f.l += 1
+  end
  end
 end
 
@@ -91,29 +117,7 @@ function draw_a_fungus(f)
  unsrnd()
 end
 
-function init_fungus()
- cls()
- draw_foot()
- -- for each line
- for y=foot.y,128 do for x=foot.x,128 do
-  if pget(x,y) != 0 then -- find the foot
-   add(fungus, {x=x-1,y=y,l=0}) -- record outline
-   break
-  end
- end end
- cls()
-end
-
-
-function grow_a_fungus()
- if rnd(100)<fungus_grow_speed then
-  f = choose(fungus)
-  if f.l<fungus_max_length then
-   f.l += 1
-  end
- end
-end
-
+-- helpers
 function srnd(v)
  old_seed = rnd(128)
  srand(v)
