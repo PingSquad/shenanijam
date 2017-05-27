@@ -3,25 +3,11 @@ version 8
 __lua__
 game_started_at = time()
 old_seed = 0
-foot = {}
-foot.x=101
-foot.y=20
-foot.bw=8*2+4
-foot.bh=8*7+3
-foot.w=8*3.7
-foot.h=8*11
-foot.offx=0
-foot.offy=0
-foot.speed=200
-fungus_grow_speed = 300
-fungus_seed = rnd(128)
-fungus = {}
-fungus_max_length = 15
 
 t=0
 
 function _init()
- init_fungus()
+ init_foot()
 end
 
 function _update()
@@ -54,6 +40,20 @@ end
 -- objects
 
 -- foot
+function init_foot()
+ foot = {}
+ foot.x=101
+ foot.y=20
+ foot.bw=8*2+4
+ foot.bh=8*7+3
+ foot.w=8*3.7
+ foot.h=8*11
+ foot.offx=0
+ foot.offy=0
+ foot.speed=200
+ init_fungus()
+end
+
 function draw_foot(x,y,s)
  s = s or 1
  sspr(8,0,
@@ -65,6 +65,12 @@ end
 
 -- fungus
 function init_fungus()
+ fungus_grow_speed = 300
+ fungus_seed = rnd(128)
+ fungus = {}
+ fungus_max_length = 15
+ 
+ -- get foot outline
  cls()
  draw_foot()
  -- for each line
