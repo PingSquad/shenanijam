@@ -18,13 +18,14 @@ debug = {f=function()end}
 function _init()
  init_foot()
  init_knife1()
+ init_particle_gen()
 end
 
 function _update()
  t+=1
- 
  update_knife1()
  update_foot()
+ update_particle_gen()
 end
 
 function _draw()
@@ -32,6 +33,7 @@ function _draw()
  draw_fungus()
  draw_foot()
  draw_knife1()
+ draw_particle_gen()
  debug.f()
 end
 
@@ -80,7 +82,7 @@ function update_foot()
  update_fungus()
  for bf in all(f.blood_spouts) do 
   bf:update()
-  if bf.hp <= 0 and #bf.drops <= 0 then
+  if bf.hp <= -20 then
    --we can remove while iterating
    del(f.blood_spouts, bf)
   end
@@ -145,6 +147,7 @@ end
 
 -- fungus
 function init_fungus()
+ fungus_colors = {10,11,3}
  fungus_grow_speed = 10
  fungus_seed = rnd(128)
  fungus = {}
@@ -179,11 +182,31 @@ function grow_a_fungus()
 end
 
 function cut_fungus(x,y)
- x = flr(x-foot.offx)
- y = flr(foot.y-y-foot.offy)
+ x = flr(x-foot.offx)+1
+ y = flr(y-foot.y-foot.offy)
  f = fungus[y]
  if (not f) return
- y = f.y
+ y = f.y+foot.offy
+ cut = false
+ for fx=f.x-f.l,x do
+  cut = true
+  c=choose(fungus_colors)
+  ac=pget(x,y)
+  for fc in all(fungus_colors) do
+   if fc==ac then
+    c=ac
+    break
+   end
+  end
+  add(particles,
+   make_particle(
+    fx,y,
+    -rnd(1.5)-1,rnd(1),
+    c,1,0
+   ) -- add die function to add to cauldron
+  )
+ end
+ if(cut)f.l = flr(f.x-x)
  
 end
 
@@ -223,21 +246,17 @@ function make_blood_fountain(x,y,dx,dy,n,hp)
   n=n or rnd(5),
   hp=hp or 100,
   drain=1,
-  drops={},
   update=function(self)
    x = self.x + foot.offx
    y = self.y + foot.offy
    if self.hp > 0 and rnd(100)<self.n then 
     for i=0,self.n,100 do
-     add(self.drops, make_drop(x,y,
-                               self.dx*(rnd(.5)+1),
-                               self.dy*(rnd(.5)+1)))
-    end
-   end
-   for d in all(self.drops) do
-    d:update()
-    if d.hp<=0 then 
-     del(self.drops, d)
+     add(particles, 
+      make_particle(
+       x,y,
+       self.dx*(rnd(.5)+1),
+       self.dy*(rnd(.5)+1),
+       8,1,0))
     end
    end
    self.hp-=self.drain 
@@ -246,19 +265,43 @@ function make_blood_fountain(x,y,dx,dy,n,hp)
    x = self.x + foot.offx
    y = self.y + foot.offy
    pset(x,y,8)pset(x+1,y+1,8)pset(x+1,y+2,8)
-   for d in all(self.drops) do
-    d:draw()
-   end
   end
  }
 end
 
-function make_drop(x,y,dx,dy)
+-- particle generator
+function init_particle_gen()
+ particles = {}
+end
+
+function update_particle_gen()
+
+   for d in all(particles) do
+    d:update()
+    if d.hp<=0 then 
+     del(particles, d)
+    end
+   end
+end
+function draw_particle_gen()
+ for d in all(particles) do
+  d:draw()
+ end
+end
+
+-- particle
+function make_particle(x,y,dx,dy,
+                       c,hp,drain,
+                       die_func)
  return {
   x=x, y=y,
   dx=dx, dy=dy,
+  c=c,
   dec=.8,
-  hp=1,
+  hp=hp,
+  drain=drain,
+  dead=false,
+  die=die_func or function()end, -- empty function on default
   update=function(self)
    self.dx*=self.dec
    self.dy+=grav
@@ -269,9 +312,17 @@ function make_drop(x,y,dx,dy)
    if self.y >= lvl[lvl.current].bottom then
     self.hp=0
    end
+   if self.hp <= 0 then
+    if not dead then 
+     self:die()
+    end
+    dead=true 
+   end
+
+   self.hp-=self.drain
   end,
   draw=function(self)
-   pset(self.x,self.y,8)
+   pset(self.x,self.y,self.c)
   end
  }
 end
@@ -342,10 +393,16 @@ function update_knife1()
  -- elseif flr(k.x)>=lp then -- cut
  -- end
 
- if phit_colors(k.x,k.y, {3,10,11}) then -- cut
-  cut_fungus(k.x,k.y)
- elseif phit_colors(k.x,k.y, {4,15}) then -- hurt
+ --if phit_colors(k.x,k.y, {3,10,11}) then -- cut
+ -- cut_fungus(k.x,k.y)
+ --elseif
+ if phit_colors(k.x,k.y, {4,15}) then -- hurt
   cut_foot(k.x,k.y)
+ else 
+  cut_fungus(k.x,k.y-2)
+  cut_fungus(k.x,k.y-1)
+  cut_fungus(k.x,k.y)
+
  end
 end
 
