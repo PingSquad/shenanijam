@@ -178,6 +178,13 @@ function grow_a_fungus()
  end
 end
 
+function cut_fungus(x,y)
+ x = flr(x-foot.offx)
+ y = flr(foot.y-y-foot.offy)
+ f = fungus[y]
+ 
+end
+
 function draw_fungus()
  --srnd(fungus_seed)
  foreach(fungus, draw_a_fungus)
@@ -334,7 +341,7 @@ function update_knife1()
  -- end
 
  if phit_colors(k.x,k.y, {3,10,11}) then -- cut
-
+  cut_fungus(k.x,k.y)
  elseif phit_colors(k.x,k.y, {4,15}) then -- hurt
   cut_foot(k.x,k.y)
  end
