@@ -64,8 +64,26 @@ function update_foot()
  f = foot
  s=f.speed
  f.offy = sin(t/s/2-s/21)*5
+
+ f.dx *= f.dec
+ f.dx += f.grav
+ f.dx = mid(-f.max_dx/2, f.dx, f.max_dx)
+
+ --f.x += f.dx 
+ --f.x = max(f.rest_x, f.x)
+ 
+ f.offx = max( sin(t/s)*1.3, f.offx+f.dx )
+
  update_fungus()
 end
+
+-- spouts blood
+-- retracts
+function cut_foot(x,y)
+ foot.dx = foot.max_dx
+
+end
+
 function draw_foot()
  all_to_color(2)
  draw_foot_here(foot.x+17+foot.offx/3,
@@ -218,6 +236,18 @@ function update_knife1()
  -- lp = flr(fs.x-fs.l+foot.offx)
  -- rp = flr(fs.x+foot.offx)
  -- debug = {f=function()line(lp,k.y,rp,k.y,8)end}
+
+ -- if flr(k.x)>rp then  -- hurt
+ --  foot.dx = foot.max_dx
+ -- elseif flr(k.x)>=lp then -- cut
+ -- end
+
+ if phit_colors(k.x,k.y, {3,10,11}) then -- cut
+
+ elseif phit_colors(k.x,k.y, {4,15}) then -- hurt
+  cut_foot(k.x,k.y)
+ end
+end
 
 -- get fungus string at y coord lvl
 -- or nil
