@@ -238,6 +238,14 @@ function draw_a_fungus(f)
  unsrnd()
 end
 
+-- get fungus string at y coord lvl
+-- or nil
+function get_fungus(y)
+ y = flr(y-foot.offy)
+ if(y < 1 or y > #fungus) return nil
+ return fungus[y]
+end
+
 
 -- blood particles
 function make_blood_fountain(x,y,dx,dy,n,hp)
@@ -425,14 +433,6 @@ function update_knife1()
   cut_fungus(k.x,k.y)
 
  end
-end
-
--- get fungus string at y coord lvl
--- or nil
-function get_fungus(y)
- y = y-foot.y-foot.offy
- if(y < 1 or y > #fungus) return nil
- return fungus[y]
 end
 
 function draw_knife1()
