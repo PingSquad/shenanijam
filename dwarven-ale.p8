@@ -5,10 +5,13 @@ game_started_at = time()
 old_seed = 0
 
 lvl={
- {bottom=100}
+ {bottom=100},
+ current=1
 }
 
 t=0
+
+grav=1
 
 debug = {f=function()end}
 
@@ -26,8 +29,8 @@ end
 
 function _draw()
  cls()
- draw_foot()
  draw_fungus()
+ draw_foot()
  draw_knife1()
  debug.f()
 end
@@ -75,12 +78,32 @@ function update_foot()
  f.offx = max( sin(t/s)*1.3, f.offx+f.dx )
 
  update_fungus()
+ for bf in all(f.blood_spouts) do 
+  bf:update()
+  if bf.hp <= 0 and #bf.drops <= 0 then
+   --we can remove while iterating
+   del(f.blood_spouts, bf)
+  end
+ end
+ debug.f=function()
+  print(#foot.blood_spouts,0,0,7)
+  y=0
+  for bs in all(foot.blood_spouts) do 
+   print('hp:'..bs.hp..' #:'..#bs.drops,0,bs.y,7)
+  end
+ end
 end
 
 -- spouts blood
 -- retracts
 function cut_foot(x,y)
  foot.dx = foot.max_dx
+ x = flr(x-foot.offx)
+ y = flr(y-foot.offy)
+ add(foot.blood_spouts, 
+     make_blood_fountain(x+1,y+1,
+                         -rnd(10),0,
+                         rnd(200)+1,40))
 
 end
 
@@ -104,6 +127,10 @@ function draw_foot()
   all_to_color()
  else
   draw_foot_here()
+ end
+
+ for bf in all(f.blood_spouts) do 
+  bf:draw()
  end
 end
 
@@ -176,6 +203,70 @@ function draw_a_fungus(f)
  unsrnd()
 end
 
+
+-- blood particles
+function make_blood_fountain(x,y,dx,dy,n,hp)
+ return {
+  x=x,
+  y=y,
+  dx=dx or 0,
+  dy=dy or 0,
+  n=n or rnd(5),
+  hp=hp or 100,
+  drain=1,
+  drops={},
+  update=function(self)
+   x = self.x + foot.offx
+   y = self.y + foot.offy
+   if self.hp > 0 and rnd(100)<self.n then 
+    for i=0,self.n,100 do
+     add(self.drops, make_drop(x,y,
+                               self.dx*(rnd(.5)+1),
+                               self.dy*(rnd(.5)+1)))
+    end
+   end
+   for d in all(self.drops) do
+    d:update()
+    if d.hp<=0 then 
+     del(self.drops, d)
+    end
+   end
+   self.hp-=self.drain 
+  end,
+  draw=function(self)
+   x = self.x + foot.offx
+   y = self.y + foot.offy
+   pset(x,y,8)pset(x+1,y+1,8)pset(x+1,y+2,8)
+   for d in all(self.drops) do
+    d:draw()
+   end
+  end
+ }
+end
+
+function make_drop(x,y,dx,dy)
+ return {
+  x=x, y=y,
+  dx=dx, dy=dy,
+  dec=.8,
+  hp=1,
+  update=function(self)
+   self.dx*=self.dec
+   self.dy+=grav
+   self.dy*=self.dec
+   self.x+=self.dx 
+   self.y+=self.dy
+   --debug.f=function()print(self.dy,0,self.y,7)end
+   if self.y >= lvl[lvl.current].bottom then
+    self.hp=0
+   end
+  end,
+  draw=function(self)
+   pset(self.x,self.y,8)
+  end
+ }
+end
+
 -- foot knife
 function init_knife1()
  knife1={
@@ -184,7 +275,7 @@ function init_knife1()
  max_dx=3,
  y=10,
  dy=0,
- max_dy=.1,  --.7
+ max_dy=.7,  --.7
  h=10,
  speedy=.02,
  speedx=.4,
