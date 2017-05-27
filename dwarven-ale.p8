@@ -276,7 +276,7 @@ function init_knife1()
  y=10,
  dy=0,
  max_dy=.7,  --.7
- h=10,
+ h=30,
  speedy=.02,
  speedx=.4,
  falling=false,
