@@ -403,7 +403,7 @@ function update_knife1()
   k.dy = 0.2
  end
 
- debug.f=function()print(k.dy,0,0)end
+ --debug.f=function()print(k.dy,0,0)end
 
 
 
