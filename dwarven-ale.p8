@@ -36,7 +36,7 @@ function _draw()
  draw_knife1()
  draw_particle_gen()
  draw_meter({'yeast',9},114,64,false,7)
- draw_meter({'blood',8},122,64,true,3)
+ draw_meter({'blood',8},122,64+20,true,3,40)
  debug.f()
 end
 
@@ -63,7 +63,7 @@ function init_foot()
   blood_spouts={}
  }
  init_fungus()
- for i=0,8000 do
+ for i=0,4000 do
   update_fungus()
  end
 end
@@ -475,8 +475,8 @@ function init_meter()
  meter = {
   levels = {
    blood = {
-    ideal=0,
-    edge=100,
+    ideal=9,
+    edge=200,
     10,9,4,2,8,
     amt=0
    },
@@ -509,11 +509,11 @@ end
 -- x,y centered
 -- flip arrow
 -- width
-function draw_meter(labelc,x,y,fh,w)
+function draw_meter(labelc,x,y,fh,w,h)
  label=labelc[1]
  lc=labelc[2] or 6
  w=w or 5
- h=80
+ h=h or 80
  m = meter.levels[label]
  xc=x-w/2
  yc=y-h/2
@@ -521,8 +521,9 @@ function draw_meter(labelc,x,y,fh,w)
  c = m[min(flr(#m/m.edge * m.amt)+1,#m)]
  grace = m.edge*.05 -- 5%
  ac = {6,7} -- arrow color
- if m.ideal > m.amt-grace and -- within grace
-    m.ideal < m.amt+grace then 
+ optimal = m.ideal > m.amt-grace and -- within grace
+           m.ideal < m.amt+grace
+ if optimal then 
   ac= {9,10}
  end
  py = yc+h-fy
@@ -552,7 +553,11 @@ function draw_meter(labelc,x,y,fh,w)
  pset(xc+w+1,py,8)
 
  --arrows
- ax=xc + sin((t+x/4)/69) - 3
+ if optimal then
+  ax=xc + sin((t+x/4)/16)*2 - 3
+ else
+  ax=xc + sin((t+x/4)/69) - 3
+ end
  aw=3
  ay=yc+h-h/m.edge * m.ideal
  if fh then
