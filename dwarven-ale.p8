@@ -571,11 +571,14 @@ function draw_graphics(gfx,sx,sy,sw,sh, --scale w/h
  end
  
  for gy=1,gfx.h do for gx=1,gfx.w do 
-  rectfill(sx+gx*sw+sw,
-           sy+gy*sh+sh,
-           sx+gx*sw,
-           sy+gy*sh, 
-           gfx[gy][gx])
+  c = gfx[gy][gx]
+  if c!=trans_c then
+   rectfill(sx+gx*sw+sw,
+            sy+gy*sh+sh,
+            sx+gx*sw,
+            sy+gy*sh,
+            c)
+  end
  end end
 end
 
