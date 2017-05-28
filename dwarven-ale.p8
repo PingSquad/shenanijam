@@ -17,6 +17,7 @@ debug = {f=function()end}
 
 function _init()
  init_foot()
+ init_wood()
  init_knife1()
  init_particle_gen()
  init_meter()
@@ -26,6 +27,7 @@ function _update()
  t+=1
  update_knife1()
  update_foot()
+ update_wood()
  update_particle_gen()
 end
 
@@ -33,10 +35,13 @@ function _draw()
  cls()
  draw_fungus()
  draw_foot()
+ draw_wood()
+ --draw_meter({'yeast',9},114,64,false,7) --7
+ --draw_meter({'blood',8},122,64+20,true,3,40) --15
+ draw_meter({'yeast',9},64-3,64,false,7)
+ draw_meter({'blood',8},64+5,64+20,true,3,40)
  draw_knife1()
  draw_particle_gen()
- draw_meter({'yeast',9},114,64,false,7)
- draw_meter({'blood',8},122,64+20,true,3,40)
  debug.f()
 end
 
@@ -146,6 +151,35 @@ function draw_foot_here(x,y,s)
  					x or foot.x+foot.offx,
  					y or foot.y+foot.offy,
  					foot.w*s,foot.h*s)
+end
+
+function init_wood()
+ wood = {
+  x=2,
+  y=0,
+  dy=3,
+  w=32,
+  gfx = unpack_graphics('aaaaaaaa44aaaaaaaaaaaaaaaaaa4aaaaaaaaaa44aaaaaaaaaaaaaaaaaa44aaaaaaaaa44aaaaaaaaaaaaaaa44444aaaaaaaa444aaaaaaaaaaaaaa444aaaaaaaaaa444aaaaaaaaaaaaa444aaaaaaaaaaa44aaaaaaaaa44444444aaaaaaaaaaaaaaaaaaaaaaa44aaaaaaaaaaaaaaaaaaaaaaaaaaa444aaaaaaaaaaaaaaaaaaaaaaaaaaa444aaaaaaaaaaaaaaaaa4444444aaaa44aaaaaaaa44444444444aaaaaaaa4444aaaaaaaa44aaaaaaaaaaaaaaaaa44aaaaaaaaa44aaaaaaaaaaaaaaaaaaaaaaaaaaa4444aaaaaaaaaaaaaaaaaaaaaaaaaaa44aaaaaaaaaaa444444444444aaaaa44aaaaaaaaa4444aaaaaaaaaaaaaaa444aaaaaaaa44aaaaaaaaaaaaaaaaa44aaaaaaaaaa4aaaaaaaaaaaaaaaaaa44aaaaaaaa444aaaaaaaaaaaaaaa4444aaaaaaaaa44aaaaaaaaaaaaaaaa44aaaaaaaaaa444aaaaaaaaaaaaaaaa44aaaaaaaaaa44aaaaaaaaaaaaaaaa444aaaaaaaaaa44aaaaaaaaaaaaaaa444aaaaaaaaaaa44aaaaaaaaaaaaa4444aaaaaaaaaaa44aaaaaaaaa4444444aaaaaaaaaa4444aaaaaaaa4444aaaaaaaaaaaaaa44994aaaaaa4444aaaaaaaaaaaaaaa44999aaaaaa444aaaaaaaaaaaaaaa444999aaaaaaa44aaaaaaaaaaaaaaa444999aaaaaaaaa4aaaaaaaaaaaaaaa49999aaaaaaaaaa44aaaaaaaaa44444499aaaaaaaaaaaa44aaaaaa4444999999aaaaaaaaaa99a44aaaaaa44999aaaaaaaaaaaaaaaa44a4aaaaaaa499aaaaaaaaaaaaaaaa944944aaaaaa449aaaaaaaaaaaaaaaa994994aaaaaaa499aaaaaaaaaaaaaaa99449aaaaaaaa449aaaaaaaaaaaaaa9944449aaaaaaaa49aaaaaaaaaaaaa99444499aaaaaaaaa49aaaaaaaaa99999444499aaaaaaaaaa49aaaaaa9999444444499aaaaaaaaaa449aaaa99944444444999aaaaaaaaaa499aaaa9944444444499aaaaaa9aaaa449aaaaa944444444449aaaaaa99aaaa499aaaa9944499994449aaaaa944aaa449aaaaa944499aa94499aaaa944aaa4999aaaaa94449aa99449aaaa944aaa4499aaaaa9944499994449aaaa44aaa4999aaaaaa9944444444499aaa44aaaa499aaaaaa9944444444499aaaa94aaaa9aaaaaaa9944449999999aaaa944aaaaaaaaaaaa9444999aaaaaaaaaa994aaaaaaaaaaa994499aaaaaaaaaaaa944aaaaaaaaaaa94499aaaaaaaaaaaaa44aaaaaaaaaaa94499aaaaaaaaaaaaa94aaaaaaaaaaaa9449aaaaaaaaaaaaa444aaaaa4aaaaa9449aaaaaaaaaaaa994aaaaaaa4aaaaa9449aaaaaaaaaa99944aaaaa444aaaa94499aaaaaaa9444444aaaaaa44aaaaa9449aaaaaaa9444aaaaaaaaaa4aaaaa94449aaaaaa944aaaaaaaaaaa44aaaaa94499aaaaa944aaaaaaaaaaa44aaaaaa9449aaaaa944aaaaaaaaaaa44aaaaaaa4499aaaa944aaaaaaaaaaa44aaaaaaaa449aaaaa949aaaaaaaaa44aaaaaaaaaa449aaaaa44aaaaaaaa44aaaaaaaaa'
+                        ,32),
+  falling=true
+ }
+ wood.h = wood.gfx.h
+end
+
+function update_wood()
+ w = wood 
+ w.dy += grav
+ w.y += w.dy 
+ b = lvl[1].bottom-w.h
+ if w.y > b then
+  w.dy *= -.5
+ end
+ w.y = min(w.y+w.dy,lvl[1].bottom-w.h)
+end
+
+function draw_wood()
+ w = wood
+ draw_graphics(w.gfx,w.x,w.y)
 end
 
 -- fungus
