@@ -192,7 +192,7 @@ function update_wood()
 
  --flipping
  if w.flipping then
-  w.w-=2
+  w.w-=4
   w.w = max(-w.gfx.w, w.w)
   if w.w == -w.gfx.w then -- done flipping
    flip_graphics(w.gfx)
@@ -251,19 +251,19 @@ function draw_wood()
 
  all_to_color(2)
  draw_graphics(w.gfx,
-  w.x+2,w.y+table.oy,
+  w.x+2 +w.gfx.w/2 - w.w/2,w.y+table.oy,
   w.w/w.gfx.w)
  all_to_color()
 
  g = {w.gfx[1],w=w.w,h=1}
  all_to_color(4)
  draw_graphics(g,
-  w.x+2,w.y+table.oy,
+  w.x+2 +w.gfx.w/2 - w.w/2,w.y+table.oy,
   w.w/w.gfx.w)
  all_to_color()
 
  draw_graphics(w.gfx,
-  w.x,w.y,
+  w.x +w.gfx.w/2 - w.w/2,w.y,
   w.w/w.gfx.w)
 end
 
