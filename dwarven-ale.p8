@@ -104,7 +104,7 @@ function cut_foot(x,y)
  y = flr(y-foot.offy)
  add(foot.blood_spouts, 
      make_blood_fountain(x+1,y+1,
-                         -rnd(10),0,
+                         -rnd(10),rnd(2)-1,
                          rnd(200)+1,40))
 
 end
@@ -204,7 +204,7 @@ function cut_fungus(x,y)
   add(particles,
    make_particle(
     fx,y,
-    -rnd(1.5)-1,rnd(1),
+    -rnd(1.5)-1,rnd(2)-1,
     c,1,0
    ) -- add die function to add to cauldron
   )
@@ -519,6 +519,66 @@ function intersects_point_box(px,py,x,y,w,h)
  return flr(px)>=flr(x) and flr(px)<flr(x+w) and
         flr(py)>=flr(y) and flr(py)<flr(y+h)
 end
+
+-- hex
+hex_chrs = '0123456789abcdef'
+chr_2_int = {}
+int_2_chr = {}
+for ci=1,16 do
+ c = sub(hex_chrs,ci,ci)
+ int_2_chr[ci-1] = c
+ chr_2_int[c] = ci-1
+end
+function c2i(c)
+ return chr_2_int[c]
+end
+function int_at(str, i)
+ return c2i(sub(str,i,i))
+end
+function i2c(i)
+ return int_2_chr[i]
+end
+
+--experimental graphics packing
+function unpack_graphics(str, w)
+ m = {}
+
+ for i=1,#str do
+  x=i%w
+  y=flr(i/w)+1
+  if x==1 then
+   add(m,{})
+  end
+   add(m[y],int_at(str, i))
+ end
+ m.w = w
+ m.h = #m
+ return m
+end
+
+function draw_graphics(gfx,sx,sy,sw,sh, --scale w/h
+                       fh,fv,trans_c) --flip h/v, transparent color
+ sw,sh=sw or 1,sh or 1
+ fh,fv=fh or false,fv or false
+ trans_c=trans_c or 0
+ if fh then
+  sx+=gfx.w*sw
+  sw=-sw
+ end
+ if fv then 
+  sy+=gfx.h*sh
+  sh=-sh
+ end
+ 
+ for gy=1,gfx.h do for gx=1,gfx.w do 
+  rectfill(sx+gx*sw+sw,
+           sy+gy*sh+sh,
+           sx+gx*sw,
+           sy+gy*sh, 
+           gfx[gy][gx])
+ end end
+end
+
 __gfx__
 000000000004ffff0000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000000000
 00000000004ffffff000000000000000090000000000000000000000000900000000000000000000000000000000000000000000000000000000000000000000
