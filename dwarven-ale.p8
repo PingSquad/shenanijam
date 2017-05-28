@@ -221,6 +221,14 @@ function init_table()
    fc = 9
    cs = {4,4,2,1}
    tcs = {9,4,2}
+
+   -- leg
+   x=s.x+s.w/2
+   y=s.y+s.h/2
+   rectfill(x+s.w/4-1,y,x+s.w/4,140,1)
+   rectfill(x,y,x+s.w/4-1,140,2)
+   rectfill(x+1,s.y+s.h+3,x+s.w/4-3,140,4)
+   rectfill(x+4,s.y+s.h+4,x+5,140,9)
    for i=0,s.depth do
     r = s.depth-i
     c = get_arr_section(cs, s.depth, r)
@@ -228,7 +236,7 @@ function init_table()
     y = s.y+s.oy*r
     rectfill(x,y,x+s.w,y+s.h,c)
     tc = get_arr_section(tcs, s.depth, r)
-    line(x,y,x+s.w,y,tc)
+    rectfill(x,y,x+s.w,y,tc)
    end
    rectfill(s.x,s.y,s.x+s.w,s.y+s.h,fc)
   end
@@ -487,8 +495,8 @@ function update_knife1()
              k.max_dy)
   k.y += k.dy
  elseif k.raising then
-  k.dy = max(k.dy-k.speedy*4,
-             -k.max_dy*4)
+  k.dy = max(k.dy-k.speedy*6,
+             -k.max_dy*6)
   k.y += k.dy
  end
 
@@ -785,6 +793,14 @@ function draw_graphics(gfx,sx,sy,sw,sh, --scale w/h
             c)
   end
  end end
+end
+
+--/bbs/?tid=28374
+orf=rectfill
+function rectfill(x0,y0,x1,y1,...)
+if (x0>x1) x0,x1=x1,x0
+if (y0>y1) y0,y1=y1,y0
+orf(x0,y0,x1,y1,...)
 end
 
 
