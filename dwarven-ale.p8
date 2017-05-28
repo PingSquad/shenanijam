@@ -174,7 +174,7 @@ function update_wood()
  w = wood 
  w.dy += grav
  w.y += w.dy 
- b = table.y-w.h
+ b = table.y-w.h + table.depth*table.oy
  if w.y > b then
   table.dy = w.dy/5
   w.dy *= -.5
@@ -184,22 +184,32 @@ end
 
 function draw_wood()
  w = wood
+
+ all_to_color(2)
+ draw_graphics(w.gfx,w.x+2,w.y+table.oy)
+ all_to_color()
+
+ g = {w.gfx[1],w=w.w,h=1}
+ all_to_color(4)
+ draw_graphics(g,w.x+2,w.y+table.oy)
+ all_to_color()
+
  draw_graphics(w.gfx,w.x,w.y)
 end
 
 function init_table()
  table = {
-  x=0,
+  x=-30,
   y=100,
   rest_y=100,
   dy=0,
   rest_dy=-2,
   grav=-.5,
-  w=40,
-  h=20,
-  ox=1,
-  oy=.2,
-  depth=5,
+  w=62,
+  h=16,
+  ox=1.3,
+  oy=-.5,
+  depth=10,
   update=function(s)
    s.dy += s.grav
    s.dy = max(s.dy,s.rest_dy)
@@ -208,7 +218,19 @@ function init_table()
    s.y = max(s.y,s.rest_y)
   end,
   draw=function(s)
-   rectfill(s.x,s.y,s.x+s.w,s.y+s.h,9)
+   fc = 9
+   cs = {4,4,2,1}
+   tcs = {9,4,2}
+   for i=0,s.depth do
+    r = s.depth-i
+    c = get_arr_section(cs, s.depth, r)
+    x = s.x+s.ox*r
+    y = s.y+s.oy*r
+    rectfill(x,y,x+s.w,y+s.h,c)
+    tc = get_arr_section(tcs, s.depth, r)
+    line(x,y,x+s.w,y,tc)
+   end
+   rectfill(s.x,s.y,s.x+s.w,s.y+s.h,fc)
   end
  }
 end
@@ -583,7 +605,7 @@ function draw_meter(labelc,x,y,fh,w,h)
  xc=x-w/2
  yc=y-h/2
  fy=min(h/m.edge * m.amt,h)
- c = m[min(flr(#m/m.edge * m.amt)+1,#m)]
+ c = get_arr_section(m, m.edge, m.amt)
  grace = m.edge*.05 -- 5%
  ac = {6,7} -- arrow color
  optimal = m.ideal > m.amt-grace and -- within grace
@@ -669,6 +691,10 @@ end
 
 function choose(arr)
  return arr[flr(rnd(#arr)+1)]
+end
+
+function get_arr_section(arr, limit, i)
+ return arr[min(flr(#arr/limit * i)+1, #arr)]
 end
 
 function all_to_color(c)
@@ -760,6 +786,7 @@ function draw_graphics(gfx,sx,sy,sw,sh, --scale w/h
   end
  end end
 end
+
 
 __gfx__
 000000000004ffff0000000000000000000000000000000000000000000900000776600000000000000000000005500000000000000000000000000000000000
