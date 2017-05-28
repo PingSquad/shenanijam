@@ -187,6 +187,17 @@ function update_wood()
   w.dy *= -.5
  end
  w.y = min(w.y+w.dy,flr(b))
+
+ --flipping
+ if w.flipping then
+  w.w-=2
+  w.w = max(-w.gfx.w, w.w)
+  if w.w == -w.gfx.w then -- done flipping
+   flip_graphics(w.gfx)
+   w.w=w.gfx.w
+   w.flipping = false
+  end
+ end
 end
 
 function cut_wood(x,y)
@@ -237,15 +248,21 @@ function draw_wood()
  w = wood
 
  all_to_color(2)
- draw_graphics(w.gfx,w.x+2,w.y+table.oy)
+ draw_graphics(w.gfx,
+  w.x+2,w.y+table.oy,
+  w.w/w.gfx.w)
  all_to_color()
 
  g = {w.gfx[1],w=w.w,h=1}
  all_to_color(4)
- draw_graphics(g,w.x+2,w.y+table.oy)
+ draw_graphics(g,
+  w.x+2,w.y+table.oy,
+  w.w/w.gfx.w)
  all_to_color()
 
- draw_graphics(w.gfx,w.x,w.y)
+ draw_graphics(w.gfx,
+  w.x,w.y,
+  w.w/w.gfx.w)
 end
 
 function init_table()
@@ -852,6 +869,17 @@ function draw_graphics(gfx,sx,sy,sw,sh, --scale w/h
             c)
   end
  end end
+end
+
+-- flips on horizontal
+function flip_graphics(gfx)
+ for y=1,gfx.h do 
+  tr={}
+  for x=1,gfx.w do 
+   tr[(gfx.w-x)+1]=gfx[y][x]
+  end
+  gfx[y]=tr
+ end
 end
 
 --/bbs/?tid=28374
