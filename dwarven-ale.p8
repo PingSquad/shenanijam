@@ -543,13 +543,13 @@ end
 function unpack_graphics(str, w)
  m = {}
 
- for i=1,#str do
+ for i=0,#str-1 do
   x=i%w
-  y=flr(i/w)+1
-  if x==1 then
+  y=flr(i/w)
+  if x==0 then
    add(m,{})
   end
-   add(m[y],int_at(str, i))
+   add(m[y+1],int_at(str, i+1))
  end
  m.w = w
  m.h = #m
