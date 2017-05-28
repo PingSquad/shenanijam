@@ -19,6 +19,7 @@ function _init()
  init_foot()
  init_knife1()
  init_particle_gen()
+ init_meter()
 end
 
 function _update()
@@ -34,6 +35,8 @@ function _draw()
  draw_foot()
  draw_knife1()
  draw_particle_gen()
+ draw_meter({'yeast',9},114,64,false,7)
+ draw_meter({'blood',8},122,64,true,3)
  debug.f()
 end
 
@@ -205,7 +208,10 @@ function cut_fungus(x,y)
    make_particle(
     fx,y,
     -rnd(1.5)-1,rnd(2)-1,
-    c,1,0
+    c,1,0,
+    function(self)
+     add_to_meter('yeast',1)
+    end
    ) -- add die function to add to cauldron
   )
  end
@@ -267,7 +273,11 @@ function make_blood_fountain(x,y,dx,dy,n,hp)
        x,y,
        self.dx*(rnd(.5)+1),
        self.dy*(rnd(.5)+1),
-       8,1,0))
+       8,1,0,
+       function(self)
+        add_to_meter('blood',1)
+       end
+    ))
     end
    end
    self.hp-=self.drain 
@@ -324,10 +334,10 @@ function make_particle(x,y,dx,dy,
     self.hp=0
    end
    if self.hp <= 0 then
-    if not dead then 
+    if not self.dead then 
      self:die()
     end
-    dead=true 
+    self.dead=true 
    end
 
    self.hp-=self.drain
@@ -459,6 +469,105 @@ function draw_knife1()
  pset(x,y,c)
 
 end
+
+-- beer meter
+function init_meter()
+ meter = {
+  levels = {
+   blood = {
+    ideal=0,
+    edge=100,
+    10,9,4,2,8,
+    amt=0
+   },
+   yeast = {
+    ideal=500,
+    edge=1000,
+    9,15,10,11,3,
+    amt=0
+   },
+   grain = {
+    ideal=50,
+    edge=100,
+    12,13,10,6,5,
+    amt=0
+   }
+  }
+ }
+end
+
+function update_meter()
+ 
+end
+
+function add_to_meter(label, amt)
+ meter.levels[label].amt += amt
+ --debug.f=function()print(meter.levels[label].amt)end
+end
+
+-- labelc = {'label', color}
+-- x,y centered
+-- flip arrow
+-- width
+function draw_meter(labelc,x,y,fh,w)
+ label=labelc[1]
+ lc=labelc[2] or 6
+ w=w or 5
+ h=80
+ m = meter.levels[label]
+ xc=x-w/2
+ yc=y-h/2
+ fy=min(h/m.edge * m.amt,h)
+ c = m[min(flr(#m/m.edge * m.amt)+1,#m)]
+ grace = m.edge*.05 -- 5%
+ ac = {6,7} -- arrow color
+ if m.ideal > m.amt-grace and -- within grace
+    m.ideal < m.amt+grace then 
+  ac= {9,10}
+ end
+ py = yc+h-fy
+
+ --fill
+ rect(xc-1,yc,xc+w+2,yc+h+1,5)
+ rect(xc-1,yc,xc+w+2,yc+h+1,5)
+
+ rectfill(xc+1,yc+h,
+          xc+w,py,c)
+ --border
+ rect(xc,yc,xc+w+1,yc+h,7)
+ --label
+ lx=x-1
+ ly=y-3*(#label+1)-2
+ for i=1,#label do
+  dc=lc
+  if((t+i-1+x/3)%30<2)dc=7
+  l = sub(label,i,i)
+  print(l,lx,ly+i*6+1,1)
+  print(l,lx+1,ly+i*6,5)
+  print(l,lx-1,ly+i*6,5)
+  print(l,lx,ly+i*6,dc)
+ end
+ -- marker
+ pset(xc,py,8)
+ pset(xc+w+1,py,8)
+
+ --arrows
+ ax=xc + sin((t+x/4)/69) - 3
+ aw=3
+ ay=yc+h-h/m.edge * m.ideal
+ if fh then
+  ax+=w+aw*2+1
+  line(ax,ay+1,ax-aw,ay,ac[1])
+  line(ax,ay-1,ax-aw,ay,ac[2])
+  line(ax,ay,ax-aw,ay,ac[2])
+ else
+  line(ax,ay+1,ax+aw,ay,ac[1])
+  line(ax,ay-1,ax+aw,ay,ac[2])
+  line(ax,ay,ax+aw,ay,ac[2])
+ end
+
+end
+
 
 -- helpers
 
