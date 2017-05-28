@@ -165,11 +165,17 @@ function init_wood()
   gfx = unpack_graphics('aaaaaaaa44aaaaaaaaaaaaaaaaaa4aaaaaaaaaa44aaaaaaaaaaaaaaaaaa44aaaaaaaaa44aaaaaaaaaaaaaaa44444aaaaaaaa444aaaaaaaaaaaaaa444aaaaaaaaaa444aaaaaaaaaaaaa444aaaaaaaaaaa44aaaaaaaaa44444444aaaaaaaaaaaaaaaaaaaaaaa44aaaaaaaaaaaaaaaaaaaaaaaaaaa444aaaaaaaaaaaaaaaaaaaaaaaaaaa444aaaaaaaaaaaaaaaaa4444444aaaa44aaaaaaaa44444444444aaaaaaaa4444aaaaaaaa44aaaaaaaaaaaaaaaaa44aaaaaaaaa44aaaaaaaaaaaaaaaaaaaaaaaaaaa4444aaaaaaaaaaaaaaaaaaaaaaaaaaa44aaaaaaaaaaa444444444444aaaaa44aaaaaaaaa4444aaaaaaaaaaaaaaa444aaaaaaaa44aaaaaaaaaaaaaaaaa44aaaaaaaaaa4aaaaaaaaaaaaaaaaaa44aaaaaaaa444aaaaaaaaaaaaaaa4444aaaaaaaaa44aaaaaaaaaaaaaaaa44aaaaaaaaaa444aaaaaaaaaaaaaaaa44aaaaaaaaaa44aaaaaaaaaaaaaaaa444aaaaaaaaaa44aaaaaaaaaaaaaaa444aaaaaaaaaaa44aaaaaaaaaaaaa4444aaaaaaaaaaa44aaaaaaaaa4444444aaaaaaaaaa4444aaaaaaaa4444aaaaaaaaaaaaaa44994aaaaaa4444aaaaaaaaaaaaaaa44999aaaaaa444aaaaaaaaaaaaaaa444999aaaaaaa44aaaaaaaaaaaaaaa444999aaaaaaaaa4aaaaaaaaaaaaaaa49999aaaaaaaaaa44aaaaaaaaa44444499aaaaaaaaaaaa44aaaaaa4444999999aaaaaaaaaa99a44aaaaaa44999aaaaaaaaaaaaaaaa44a4aaaaaaa499aaaaaaaaaaaaaaaa944944aaaaaa449aaaaaaaaaaaaaaaa994994aaaaaaa499aaaaaaaaaaaaaaa99449aaaaaaaa449aaaaaaaaaaaaaa9944449aaaaaaaa49aaaaaaaaaaaaa99444499aaaaaaaaa49aaaaaaaaa99999444499aaaaaaaaaa49aaaaaa9999444444499aaaaaaaaaa449aaaa99944444444999aaaaaaaaaa499aaaa9944444444499aaaaaa9aaaa449aaaaa944444444449aaaaaa99aaaa499aaaa9944499994449aaaaa944aaa449aaaaa944499aa94499aaaa944aaa4999aaaaa94449aa99449aaaa944aaa4499aaaaa9944499994449aaaa44aaa4999aaaaaa9944444444499aaa44aaaa499aaaaaa9944444444499aaaa94aaaa9aaaaaaa9944449999999aaaa944aaaaaaaaaaaa9444999aaaaaaaaaa994aaaaaaaaaaa994499aaaaaaaaaaaa944aaaaaaaaaaa94499aaaaaaaaaaaaa44aaaaaaaaaaa94499aaaaaaaaaaaaa94aaaaaaaaaaaa9449aaaaaaaaaaaaa444aaaaa4aaaaa9449aaaaaaaaaaaa994aaaaaaa4aaaaa9449aaaaaaaaaa99944aaaaa444aaaa94499aaaaaaa9444444aaaaaa44aaaaa9449aaaaaaa9444aaaaaaaaaa4aaaaa94449aaaaaa944aaaaaaaaaaa44aaaaa94499aaaaa944aaaaaaaaaaa44aaaaaa9449aaaaa944aaaaaaaaaaa44aaaaaaa4499aaaa944aaaaaaaaaaa44aaaaaaaa449aaaaa949aaaaaaaaa44aaaaaaaaaa449aaaaa44aaaaaaaa44aaaaaaaaa'
                         ,32),
   falling=true,
-  flipped=false
+  flipping=false,
+  was_cut=false,
+  flip=function(s)
+   if(not s.flipping)s.dy=-6
+   s.flipping=true
+  end
  }
  wood.h = wood.gfx.h
  wood.y = -wood.h
 end
+
 
 function update_wood()
  w = wood 
@@ -220,6 +226,7 @@ function cut_wood(x,y)
  end
  -- slow down knife if a hit
  if op != 0 then
+  w.was_cut=true
   knife1.dy=min(knife1.dy,knife1.max_dy*.75*(1+rnd(1.5)-.75))
   -- gritty difficulty
   knife1.dx*=1+rnd(.4)-.2
@@ -539,6 +546,8 @@ function update_knife1()
              k.max_dy)
   k.y += k.dy
  elseif k.raising then
+  if(wood.was_cut)wood:flip()
+  wood.was_cut = false
   k.dy = max(k.dy-k.speedy*6,
              -k.max_dy*6)
   k.y += k.dy
