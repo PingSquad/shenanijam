@@ -16,6 +16,7 @@ grav=1
 debug = {f=function()end}
 
 function _init()
+ init_table()
  init_foot()
  init_wood()
  init_knife1()
@@ -28,11 +29,13 @@ function _update()
  update_knife1()
  update_foot()
  update_wood()
+ table:update()
  update_particle_gen()
 end
 
 function _draw()
  cls()
+ table:draw()
  draw_fungus()
  draw_foot()
  draw_wood()
@@ -164,22 +167,50 @@ function init_wood()
   falling=true
  }
  wood.h = wood.gfx.h
+ wood.y = -wood.h
 end
 
 function update_wood()
  w = wood 
  w.dy += grav
  w.y += w.dy 
- b = lvl[1].bottom-w.h
+ b = table.y-w.h
  if w.y > b then
+  table.dy = w.dy/5
   w.dy *= -.5
  end
- w.y = min(w.y+w.dy,lvl[1].bottom-w.h)
+ w.y = min(w.y+w.dy,b)
 end
 
 function draw_wood()
  w = wood
  draw_graphics(w.gfx,w.x,w.y)
+end
+
+function init_table()
+ table = {
+  x=0,
+  y=100,
+  rest_y=100,
+  dy=0,
+  rest_dy=-2,
+  grav=-.5,
+  w=40,
+  h=20,
+  ox=1,
+  oy=.2,
+  depth=5,
+  update=function(s)
+   s.dy += s.grav
+   s.dy = max(s.dy,s.rest_dy)
+
+   s.y += s.dy
+   s.y = max(s.y,s.rest_y)
+  end,
+  draw=function(s)
+   rectfill(s.x,s.y,s.x+s.w,s.y+s.h,9)
+  end
+ }
 end
 
 -- fungus
