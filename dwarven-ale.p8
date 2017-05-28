@@ -17,6 +17,7 @@ debug = {f=function()end}
 
 function _init()
  init_table()
+ init_cauldron()
  init_foot()
  init_wood()
  init_knife1()
@@ -35,6 +36,7 @@ end
 
 function _draw()
  cls()
+ cauldron:draw()
  table:draw()
  draw_fungus()
  draw_foot()
@@ -263,6 +265,18 @@ function draw_wood()
  draw_graphics(w.gfx,
   w.x,w.y,
   w.w/w.gfx.w)
+end
+
+function init_cauldron()
+ cauldron={
+  x=45,
+  y=lvl[1].bottom-10,
+  gfx=unpack_graphics('000000000000004444444444444444444444444400000000000000000000000444444444444444444444444444444444444000000000000000444444444444444444444444444444444444444444000000000044444444444eeeeeeeeeeeeeeeeeeeeeeee444444444440000000444444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee444444000000444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44400000444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4440000444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4440000444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44400000444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee444000000444444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee444444000000044444444444444444444444444444444444444444444440000000044444444444444444444444444444444444444444444440000000444554444444444444444444444444444444444444455444000004444455555555555555555555555555555555555555554444400044444444444444444444444444444444444444444444444444440444444444444444444444444444444444444444444444444444444',
+                      54),
+  draw=function(s)
+   draw_graphics(s.gfx,s.x,s.y,2)
+  end
+ }
 end
 
 function init_table()
