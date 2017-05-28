@@ -198,38 +198,16 @@ function cut_wood(x,y)
    dx=rnd(4)+1
    dk=rnd(3)+1
    sc=dx>4 and 1 or 2
-   add(particles,
+   for d in all({{1,1},{1,0},{0,1}}) do
+    add(particles,
     make_particle(
-     px+1,y-1,
+     px+d[1],y-d[2],
      dx/2,
      0,
      --rnd(1)-.5,
      sc,10,dk
-   ))
-   add(particles,
-    make_particle(
-     px+1,y,
-     dx/2,
-     0,
-     --rnd(1)-.5,
-     sc,10,dk
-   ))
-   add(particles,
-    make_particle(
-     px,y-1,
-     dx/2,
-     0,
-     --rnd(1)-.5,
-     sc,10,dk
-   ))
-   -- add(particles,
-   --  make_particle(
-   --   px,y,
-   --   dx/2,
-   --   0,
-   --   --rnd(1)-.5,
-   --   sc,10,dk
-   -- ))
+    ))
+   end
    add(particles,
     make_particle(
      px,y,
