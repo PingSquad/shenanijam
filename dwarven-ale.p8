@@ -3,6 +3,7 @@ version 8
 __lua__
 game_started_at = time()
 old_seed = 0
+wood_flipped = 0
 
 lvl={
  {bottom=120},
@@ -201,6 +202,14 @@ function update_wood()
    flip_graphics(w.gfx)
    w.w=w.gfx.w
    w.flipping = false
+   wood_flipped += 1
+   if wood_flipped == 2 then 
+    w.dy -= 5
+    cs = 14
+    for y=1,w.gfx.h do for x=1,w.gfx.w do 
+     if (w.gfx[y][x] != 0) w.gfx[y][x] = cs
+    end end
+   end
   end
  end
 end
@@ -599,6 +608,12 @@ function update_knife1()
  elseif k.y <= k.start_y then
   k.raising = false
   k.dy = 0.2
+  if wood_flipped == 2 then 
+   init_wood()
+   wood.dy += 3
+   cut_wood(0,0)
+   return
+  end
  end
 
  --debug.f=function()print(k.dy,0,0)end
