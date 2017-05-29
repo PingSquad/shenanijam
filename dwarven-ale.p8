@@ -112,9 +112,12 @@ end
 -- spouts blood
 -- retracts
 function cut_foot(x,y)
- foot.dx = foot.max_dx
  x = flr(x-foot.offx)
  y = flr(y-foot.offy)
+ if x < foot.x or y < foot.y or y > foot.y+foot.h then
+  return
+ end
+ foot.dx = foot.max_dx
  add(foot.blood_spouts, 
      make_blood_fountain(x+1,y+1,
                          -rnd(10),rnd(2)-1,
