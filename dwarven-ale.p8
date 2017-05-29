@@ -39,16 +39,24 @@ function _draw()
  cls()
  cauldron:draw()
  table:draw()
+ draw_wood()
  draw_fungus()
  draw_foot()
- draw_wood()
  --draw_meter({'yeast',9},114,64,false,7) --7
  --draw_meter({'blood',8},122,64+20,true,3,40) --15
  draw_meter({'yeast',9},64-3,64,false,7)
  draw_meter({'blood',8},64+5,64+20,true,3,40)
+ debug.f()
+ rectfill(49,0,128,128,0)
+ cs = {2,8,14}
+ for x=49,130 do
+  ci = flr( abs( sin(x/28 + ((x)%2)/(cos(x*.0016)*2) )*(#cs-1) ) )+1
+
+  c = cs[ci]
+  line(x+sin(t/400)*1.3,0,x+sin(t/400)*1.3,127,c)
+ end
  draw_knife1()
  draw_particle_gen()
- debug.f()
 end
 
 -- objects
@@ -82,16 +90,22 @@ end
 function update_foot()
  f = foot
  s=f.speed
- f.offy = sin(t/s/2-s/21)*5
-
  f.dx *= f.dec
  f.dx += f.grav
  f.dx = mid(-f.max_dx/2, f.dx, f.max_dx)
+ if wood_flipped != 4 then
+  f.offy = sin(t/s/2-s/21)*5
 
- --f.x += f.dx 
- --f.x = max(f.rest_x, f.x)
+
+  --f.x += f.dx 
+  --f.x = max(f.rest_x, f.x)
  
- f.offx = max( sin(t/s)*1.3, f.offx+f.dx )
+  f.offx = max( sin(t/s)*1.3, f.offx+f.dx )
+ else
+  f.offy = sin(t/27)*5
+  f.offx = max( wood.x-foot.x+wood.w/2 + sin(t/15)*2.3, 
+               f.offx+f.dx*.7)
+ end
 
  update_fungus()
  for bf in all(f.blood_spouts) do 
@@ -127,6 +141,10 @@ function cut_foot(x,y)
 end
 
 function draw_foot()
+ rectfill(foot.x+foot.offx+foot.w/2,
+  foot.y+foot.offy+foot.h-33,
+  foot.x+foot.offx+foot.w*2,
+  foot.y+foot.offy+foot.h-23,4) 
  all_to_color(2)
  draw_foot_here(foot.x+17+foot.offx/3,
                 foot.y+5+foot.offy/4,
@@ -203,11 +221,19 @@ function update_wood()
    w.w=w.gfx.w
    w.flipping = false
    wood_flipped += 1
+   change_color = false
    if wood_flipped == 2 then 
     w.dy -= 5
-    cs = 14
-    for y=1,w.gfx.h do for x=1,w.gfx.w do 
-     if (w.gfx[y][x] != 0) w.gfx[y][x] = cs
+    change_color = {14}--,14,14,14,2,8,14,14}--,14,2,14,2}
+   end   
+   if wood_flipped == 4 then 
+    w.dy -= 6
+    change_color = {11}--,11,11,11,3,10,11,11}
+   end
+   if change_color then
+    for y=1,w.gfx.h do for x=1,w.gfx.w do
+     c = change_color[(x+y)%#change_color+1]
+     if (w.gfx[y][x] != 0) w.gfx[y][x] = c
     end end
    end
   end
@@ -252,7 +278,7 @@ function cut_wood(x,y)
  -- slow down knife if a hit
  if op != 0 then
   w.was_cut=true
-  knife1.dy=min(knife1.dy,knife1.max_dy*.75*(1+rnd(1.5)-.75))
+  knife1.dy=min(knife1.dy,knife1.max_dy*.85*(1+rnd(1.5)-.75))
   -- gritty difficulty
   knife1.dx*=1+rnd(.4)-.2
  end
@@ -552,9 +578,9 @@ function init_knife1()
  start_y=10,
  y=10,
  dy=0,
- max_dy=.7,  --.7
+ max_dy=.9,  --.7
  h=30,
- speedy=.02,
+ speedy=.08,
  speedx=.4,
  falling=false,
  raising=true,
