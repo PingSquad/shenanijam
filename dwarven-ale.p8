@@ -377,7 +377,7 @@ function cut_fungus(x,y)
  x = flr(x-foot.offx)+1
  y = flr(y-foot.y-foot.offy)
  f = fungus[y]
- if (not f) return
+ if (not f or x-3>f.x) return
  y = f.y+foot.offy
  cut = false
  for fx=f.x-f.l,x do
