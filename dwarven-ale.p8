@@ -290,6 +290,8 @@ end
 
 function draw_handle_line(i,x,y)
 
+end
+
 function init_cauldron()
  cauldron={
   x=45,
